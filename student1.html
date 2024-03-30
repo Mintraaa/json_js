@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Student Attendance</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 60%;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .present {
+        background-color: #b3ffb3; /* สีเขียวสำหรับมาเรียน */
+      }
+
+      .absent {
+        background-color: #ffb3b3; /* สีแดงสำหรับไม่มาเรียน */
+      }
+    </style>
+  </head>
+  <body>
+    <h1>รายชื่อการเข้าเรียน</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>รหัสประจำตัว</th>
+          <th>ชื่อ</th>
+          <th>สัปดาห์1</th>
+          <th>สัปดาห์2</th>
+          <th>สัปดาห์3</th>
+          <th>สัปดาห์4</th>
+        </tr>
+      </thead>
+      <tbody id="attendance-list"></tbody>
+    </table>
+
+    <script>
+      function loadAttendanceData() {
+        fetch("student_attendance.json")
+          .then((response) => response.json())
+          .then((data) => {
+            const tableBody = document.getElementById("attendance-list");
+            data.forEach((student) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `<td>${student["รหัสประจำตัว"]}</td><td>${student["ชื่อ"]}</td><td class="week" onclick="toggleAttendance(this)">${student["สัปดาห์1"]}</td><td class="week" onclick="toggleAttendance(this)">${student["สัปดาห์2"]}</td><td class="week" onclick="toggleAttendance(this)">${student["สัปดาห์3"]}</td><td class="week" onclick="toggleAttendance(this)">${student["สัปดาห์4"]}</td>`;
+              tableBody.appendChild(row);
+            });
+          })
+          .catch((error) => console.error("Error loading the data:", error));
+      }
+
+      function toggleAttendance(cell) {
+        const status = cell.innerHTML.trim();
+
+        // เพิ่มเงื่อนไขเพื่อตรวจสอบว่าค่าใน cell เป็น 'มา', 'ไม่มา', หรือ ''
+        if (status === "มา") {
+          cell.classList.remove("present");
+          cell.classList.add("absent");
+          cell.innerHTML = "ไม่มา";
+        } else if (status === "ไม่มา" || status === "") {
+          cell.classList.remove("absent");
+          cell.classList.add("present");
+          cell.innerHTML = "มา";
+        }
+      }
+
+      window.onload = loadAttendanceData;
+    </script>
+  </body>
+</html>
